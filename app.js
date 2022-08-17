@@ -11,8 +11,11 @@ const {
   removeCommentByID,
   getApi,
 } = require("./controllers/controller");
+console.log("Line 14");
 
 app.use(express.json());
+
+app.get("/api", getApi);
 
 app.get("/api/categories", getCategories);
 
@@ -31,8 +34,6 @@ app.get("/api/reviews/:review_id/comments", getCommentsByReviewID);
 app.post("/api/reviews/:review_id/comments", postCommentByReviewID);
 
 app.delete("/api/comments/:comment_id", removeCommentByID);
-
-app.get("/api", getApi);
 
 app.use((err, req, res, next) => {
   if (
