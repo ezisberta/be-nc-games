@@ -14,9 +14,9 @@ const {
 console.log("Line 14");
 
 app.use(express.json());
-
+console.log("Line 17");
 app.get("/api", getApi);
-
+console.log("Line 19");
 app.get("/api/categories", getCategories);
 
 app.get("/api/reviews/:review_id", getReviewByID);
