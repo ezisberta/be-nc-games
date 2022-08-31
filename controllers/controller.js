@@ -4,9 +4,15 @@ const {
   updateReviewByID,
   fetchUsers,
   fetchReviews,
+  fetchVotesByReviewID,
+  fetchVotesByCommentID,
   fetchCommentsByReviewID,
   insertCommentByReviewID,
+  insertVoteByReviewID,
+  insertVoteByCommentID,
   deleteCommentByID,
+  deleteVoteByCommentID,
+  deleteVoteByReviewID,
 } = require("../models/model");
 
 const endpoints = require("../endpoints.json");
@@ -43,10 +49,6 @@ exports.getUsers = (req, res) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  const validSortedBy = [];
-  const validOrderBy = [];
-  const validCategory = [];
-
   const where = "";
 
   const sortBy = req.query.sort_by || "created_at";
@@ -69,6 +71,24 @@ exports.getCommentsByReviewID = (req, res, next) => {
     .catch(next);
 };
 
+exports.getVotesByReviewID = (req, res, next) => {
+  const { review_id } = req.params;
+  fetchVotesByReviewID(review_id)
+    .then((votes) => {
+      res.send({ votes });
+    })
+    .catch(next);
+};
+
+exports.getVotesByCommentID = (req, res, next) => {
+  const { comment_id } = req.params;
+  fetchVotesByCommentID(comment_id)
+    .then((votes) => {
+      res.send({ votes });
+    })
+    .catch(next);
+};
+
 exports.postCommentByReviewID = (req, res, next) => {
   const { review_id } = req.params;
   const author = req.body.username;
@@ -77,6 +97,28 @@ exports.postCommentByReviewID = (req, res, next) => {
   insertCommentByReviewID(review_id, author, body)
     .then((comment) => {
       res.status(201).send({ comment });
+    })
+    .catch(next);
+};
+
+exports.postVoterByReviewID = (req, res, next) => {
+  const { review_id } = req.params;
+  const { user } = req.body;
+
+  insertVoteByReviewID(review_id, user)
+    .then(({ voter }) => {
+      res.status(201).send({ voter });
+    })
+    .catch(next);
+};
+
+exports.postVoterByCommentID = (req, res, next) => {
+  const { comment_id } = req.params;
+  const { user } = req.body;
+
+  insertVoteByCommentID(comment_id, user)
+    .then(({ voter }) => {
+      res.status(201).send({ voter });
     })
     .catch(next);
 };
@@ -90,6 +132,27 @@ exports.removeCommentByID = (req, res, next) => {
     .catch(next);
 };
 
+exports.removeVoteByCommentID = (req, res, next) => {
+  const { comment_id } = req.params;
+  const { voter } = req.query;
+
+  deleteVoteByCommentID(comment_id, voter)
+    .then(() => {
+      res.status(204).send({});
+    })
+    .catch(next);
+};
+
+exports.removeVoteByReviewID = (req, res, next) => {
+  const { review_id } = req.params;
+  const { voter } = req.query;
+
+  deleteVoteByReviewID(review_id, voter)
+    .then(() => {
+      res.status(204).send({});
+    })
+    .catch(next);
+};
 exports.getApi = (req, res) => {
   res.send({ endpoints });
 };

@@ -97,6 +97,44 @@ exports.fetchCommentsByReviewID = (revID) => {
     });
 };
 
+exports.fetchVotesByReviewID = (revID) => {
+  return db
+    .query("SELECT * FROM reviews WHERE review_id=$1", [revID])
+    .then(({ rows }) => {
+      if (rows[0]) {
+        return db
+          .query("SELECT * FROM review_votes WHERE review_id=$1", [revID])
+          .then(({ rows }) => {
+            return rows;
+          });
+      } else {
+        return Promise.reject({
+          status: 404,
+          msg: `No review found for review_id: ${revID}`,
+        });
+      }
+    });
+};
+
+exports.fetchVotesByCommentID = (commID) => {
+  return db
+    .query("SELECT * FROM comments WHERE comment_id=$1", [commID])
+    .then(({ rows }) => {
+      if (rows[0]) {
+        return db
+          .query("SELECT * FROM comment_votes WHERE comment_id=$1", [commID])
+          .then(({ rows }) => {
+            return rows;
+          });
+      } else {
+        return Promise.reject({
+          status: 404,
+          msg: `No comment found for comment_id: ${commID}`,
+        });
+      }
+    });
+};
+
 exports.insertCommentByReviewID = (revID, auth, body) => {
   return db
     .query("SELECT * FROM reviews WHERE review_id=$1", [revID])
@@ -119,14 +157,119 @@ exports.insertCommentByReviewID = (revID, auth, body) => {
     });
 };
 
-exports.deleteCommentByID = (comID) => {
+exports.insertVoteByReviewID = (revID, voter) => {
   return db
+    .query("SELECT * FROM reviews WHERE review_id=$1", [revID])
+    .then(({ rows }) => {
+      if (rows[0]) {
+        return db
+          .query(
+            "INSERT INTO review_votes (review_id, voter) VALUES ($1,$2) RETURNING*",
+            [revID, voter]
+          )
+          .then(({ rows }) => {
+            return rows[0];
+          });
+      } else {
+        return Promise.reject({
+          status: 404,
+          msg: `No review found for review_id: ${revID}`,
+        });
+      }
+    });
+};
+
+exports.insertVoteByCommentID = (commID, voter) => {
+  return db
+    .query("SELECT * FROM comments WHERE comment_id=$1", [commID])
+    .then(({ rows }) => {
+      if (rows[0]) {
+        return db
+          .query(
+            "INSERT INTO comment_votes (comment_id, voter) VALUES ($1,$2) RETURNING*",
+            [commID, voter]
+          )
+          .then(({ rows }) => {
+            return rows[0];
+          });
+      } else {
+        return Promise.reject({
+          status: 404,
+          msg: `No comment found for comment_id: ${commID}`,
+        });
+      }
+    });
+};
+
+exports.deleteCommentByID = (comID) => {
+  const deleteCommentVotesPromise = db.query(
+    "DELETE FROM comment_votes WHERE comment_id=$1 RETURNING *;",
+    [comID]
+  );
+
+  const deleteCommentPromise = db
     .query("DELETE FROM comments WHERE comment_id=$1 RETURNING *;", [comID])
     .then(({ rows }) => {
       if (!rows[0]) {
         return Promise.reject({
           status: 404,
           msg: `No comment found for comment_id: ${comID}`,
+        });
+      }
+    });
+
+  return Promise.all([deleteCommentVotesPromise, deleteCommentPromise]);
+};
+
+exports.deleteVoteByCommentID = (commID, voter) => {
+  return db
+    .query("SELECT * FROM comments WHERE comment_id=$1", [commID])
+    .then(({ rows }) => {
+      if (rows[0]) {
+        return db
+          .query(
+            "DELETE FROM comment_votes WHERE comment_id=$1 AND voter=$2 RETURNING *;",
+            [commID, voter]
+          )
+          .then(({ rows }) => {
+            if (!rows[0]) {
+              return Promise.reject({
+                status: 404,
+                msg: `No vote found for user ${voter} on comment_id: ${commID}`,
+              });
+            }
+          });
+      } else {
+        return Promise.reject({
+          status: 404,
+          msg: `No comment found for comment_id: ${commID}`,
+        });
+      }
+    });
+};
+
+exports.deleteVoteByReviewID = (revID, voter) => {
+  return db
+    .query("SELECT * FROM reviews WHERE review_id=$1", [revID])
+    .then(({ rows }) => {
+      if (rows[0]) {
+        return db
+          .query(
+            "DELETE FROM review_votes WHERE review_id=$1 AND voter=$2 RETURNING *;",
+            [revID, voter]
+          )
+          .then(({ rows }) => {
+            if (!rows[0]) {
+              return Promise.reject({
+                status: 404,
+                msg: `No vote found for user ${voter} on review_id: ${revID}`,
+              });
+            }
+          });
+      } else {
+        return Promise.reject({
+          status: 404,
+          msg: `No review found for review_id: ${revID}`,
         });
       }
     });

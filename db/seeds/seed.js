@@ -7,13 +7,23 @@ const {
 } = require("./utils");
 
 const seed = async (data) => {
-  const { categoryData, commentData, reviewData, userData } = data;
+  const {
+    categoryData,
+    commentData,
+    reviewData,
+    userData,
+    reviewVotesData,
+    commentVotesData,
+  } = data;
+
+  await db.query(`DROP TABLE IF EXISTS comment_votes;`);
+  await db.query(`DROP TABLE IF EXISTS review_votes;`);
   await db.query(`DROP TABLE IF EXISTS comments;`);
   await db.query(`DROP TABLE IF EXISTS reviews;`);
   await db.query(`DROP TABLE IF EXISTS users;`);
   await db.query(`DROP TABLE IF EXISTS categories;`);
 
-  const topicsTablePromise = db.query(`
+  const categoriesTablePromise = db.query(`
   CREATE TABLE categories (
     slug VARCHAR PRIMARY KEY,
     description VARCHAR
@@ -26,7 +36,7 @@ const seed = async (data) => {
     avatar_url VARCHAR
   );`);
 
-  await Promise.all([topicsTablePromise, usersTablePromise]);
+  await Promise.all([categoriesTablePromise, usersTablePromise]);
 
   await db.query(`
   CREATE TABLE reviews (
@@ -50,6 +60,16 @@ const seed = async (data) => {
     votes INT DEFAULT 0 NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
   );`);
+
+  await db.query(`CREATE TABLE review_votes (
+    review_id INT REFERENCES reviews(review_id) NOT NULL,
+    voter VARCHAR NOT NULL REFERENCES users(username)
+  )`);
+
+  await db.query(`CREATE TABLE comment_votes (
+    comment_id INT REFERENCES comments(comment_id) NOT NULL,
+    voter VARCHAR NOT NULL REFERENCES users(username)
+  )`);
 
   const insertCategoriesQueryStr = format(
     "INSERT INTO categories (slug, description) VALUES %L RETURNING *;",
@@ -121,9 +141,35 @@ const seed = async (data) => {
     )
   );
 
-  return db.query(insertCommentsQueryStr).then((result) => {
+  const commentsPromise = db.query(insertCommentsQueryStr).then((result) => {
     return result.rows;
   });
+
+  await Promise.all([commentsPromise]);
+
+  const insertReviewVotesQueryStr = format(
+    "INSERT INTO review_votes (review_id, voter) VALUES %L RETURNING *;",
+    reviewVotesData.map(({ review_id, voter }) => [review_id, voter])
+  );
+
+  const reviewVotesPromise = db
+    .query(insertReviewVotesQueryStr)
+    .then((result) => {
+      return result.rows;
+    });
+
+  const insertCommentVotesQueryStr = format(
+    "INSERT INTO comment_votes (comment_id, voter) VALUES %L RETURNING *;",
+    commentVotesData.map(({ comment_id, voter }) => [comment_id, voter])
+  );
+
+  const commentVotesPromise = db
+    .query(insertCommentVotesQueryStr)
+    .then((result) => {
+      return result.rows;
+    });
+
+  await Promise.all([reviewVotesPromise, commentVotesPromise]);
 };
 
 module.exports = seed;

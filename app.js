@@ -7,9 +7,15 @@ const {
   patchReviewByID,
   getUsers,
   getReviews,
+  getVotesByReviewID,
+  getVotesByCommentID,
   getCommentsByReviewID,
   postCommentByReviewID,
+  postVoterByReviewID,
+  postVoterByCommentID,
   removeCommentByID,
+  removeVoteByCommentID,
+  removeVoteByReviewID,
   getApi,
 } = require("./controllers/controller");
 
@@ -29,13 +35,23 @@ app.get("/api/users", getUsers);
 
 app.get("/api/reviews", getReviews);
 
-app.get("/api/reviews", getReviews);
-
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewID);
+
+app.get("/api/reviews/:review_id/votes", getVotesByReviewID);
+
+app.get("/api/comments/:comment_id/votes", getVotesByCommentID);
 
 app.post("/api/reviews/:review_id/comments", postCommentByReviewID);
 
+app.post("/api/reviews/:review_id/votes", postVoterByReviewID);
+
+app.post("/api/comments/:comment_id/votes", postVoterByCommentID);
+
 app.delete("/api/comments/:comment_id", removeCommentByID);
+
+app.delete("/api/comments/:comment_id/votes", removeVoteByCommentID);
+
+app.delete("/api/reviews/:review_id/votes", removeVoteByReviewID);
 
 app.use((err, req, res, next) => {
   if (
