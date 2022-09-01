@@ -9,7 +9,7 @@ exports.fetchCategories = () => {
 exports.fetchReviewByID = (revID) => {
   return db
     .query(
-      "SELECT reviews.* , COUNT(comments.review_ID) :: INT AS comment_count FROM reviews LEFT JOIN comments ON comments.review_id = reviews.review_id WHERE reviews.review_id=$1 GROUP BY reviews.review_id;",
+      "SELECT reviews.*, COUNT(DISTINCT comments.comment_id) :: INT comment_count, COUNT(DISTINCT review_votes.voter) :: INT vote_count FROM reviews LEFT OUTER JOIN comments ON comments.review_id = reviews.review_id LEFT OUTER JOIN review_votes ON review_votes.review_id = reviews.review_id WHERE reviews.review_id=$1 GROUP BY reviews.review_id;",
       [revID]
     )
     .then(({ rows }) => {
@@ -19,10 +19,11 @@ exports.fetchReviewByID = (revID) => {
           msg: `No review_id: ${revID}`,
         });
       }
-
       return rows[0];
     });
 };
+
+// SELECT reviews.* , COUNT(comments.review_ID) :: INT AS comment_count FROM reviews LEFT JOIN comments ON comments.review_id = reviews.review_id
 
 exports.updateReviewByID = (revID, incVotes) => {
   return db
@@ -71,12 +72,16 @@ exports.fetchReviews = (where, cat, sort, order) => {
   }
   return db
     .query(
-      `SELECT reviews.*, COUNT(comments.review_id) :: INT AS comment_count FROM reviews LEFT JOIN comments ON comments.review_id = reviews.review_id ${where}GROUP BY reviews.review_id ORDER BY ${sort} ${order};`
+      `SELECT reviews.*, COUNT(DISTINCT comments.comment_id) :: INT comment_count, COUNT(DISTINCT review_votes.voter) :: INT vote_count FROM reviews LEFT OUTER JOIN comments ON comments.review_id = reviews.review_id LEFT OUTER JOIN review_votes ON review_votes.review_id = reviews.review_id ${where}GROUP BY reviews.review_id ORDER BY ${sort} ${order};`
     )
     .then(({ rows }) => {
       return rows;
     });
 };
+
+//   `SELECT reviews.*, COUNT(comments.review_id) :: INT AS comment_count FROM reviews LEFT JOIN comments ON comments.review_id = reviews.review_id ${where}GROUP BY reviews.review_id ORDER BY ${sort} ${order};`
+
+//       `SELECT reviews.*, COUNT(DISTINCT comments.review_id) :: INT comment_count, COUNT(DISTINCT review_votes.review_id) vote_count FROM reviews LEFT OUTER JOIN comments ON comments.review_id = reviews.review_id LEFT OUTER JOIN review_votes ON review_votes.review_id = reviews.review_id ${where}GROUP BY reviews.review_id ORDER BY ${sort} ${order};`
 
 exports.fetchCommentsByReviewID = (revID) => {
   return db

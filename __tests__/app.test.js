@@ -133,13 +133,24 @@ describe("GET /api/users", () => {
   });
 });
 
-describe("GET /api/reviews/:review_id (comment count)", () => {
+describe("GET /api/reviews/:review_id (comment_count)", () => {
   it("should respond with a review object with a comment_count property", () => {
     return request(app)
       .get("/api/reviews/3")
       .expect(200)
       .then((res) => {
         expect(res.body.review.comment_count).toBe(3);
+      });
+  });
+});
+
+describe("GET /api/reviews/:review_id (vote_count)", () => {
+  it("should respond with a review object with a vote_count property", () => {
+    return request(app)
+      .get("/api/reviews/3")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.review.vote_count).toBe(2);
       });
   });
 });
@@ -164,6 +175,7 @@ describe("GET /api/reviews", () => {
               created_at: expect.any(String),
               votes: expect.any(Number),
               comment_count: expect.any(Number),
+              vote_count: expect.any(Number),
             })
           );
         });
