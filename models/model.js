@@ -23,8 +23,6 @@ exports.fetchReviewByID = (revID) => {
     });
 };
 
-// SELECT reviews.* , COUNT(comments.review_ID) :: INT AS comment_count FROM reviews LEFT JOIN comments ON comments.review_id = reviews.review_id
-
 exports.updateReviewByID = (revID, incVotes) => {
   return db
     .query(
@@ -78,10 +76,6 @@ exports.fetchReviews = (where, cat, sort, order) => {
       return rows;
     });
 };
-
-//   `SELECT reviews.*, COUNT(comments.review_id) :: INT AS comment_count FROM reviews LEFT JOIN comments ON comments.review_id = reviews.review_id ${where}GROUP BY reviews.review_id ORDER BY ${sort} ${order};`
-
-//       `SELECT reviews.*, COUNT(DISTINCT comments.review_id) :: INT comment_count, COUNT(DISTINCT review_votes.review_id) vote_count FROM reviews LEFT OUTER JOIN comments ON comments.review_id = reviews.review_id LEFT OUTER JOIN review_votes ON review_votes.review_id = reviews.review_id ${where}GROUP BY reviews.review_id ORDER BY ${sort} ${order};`
 
 exports.fetchCommentsByReviewID = (revID) => {
   return db

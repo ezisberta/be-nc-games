@@ -52,7 +52,7 @@
           "review_body": "Try to trick your friends. If you find yourself being dealt the Chamelean card then the aim of the game is simple; blend in... Meanwhile the other players aim to be as vague as they can to not give the game away ",
           "category": "hidden-roles",
           "created_at": "2021-01-18 10:01:42.151",
-          "votes": 5,
+          "votes": 2,
           "comment_count": 0
         },
         {
@@ -64,7 +64,7 @@
           "review_body": "We couldn't find the werewolf!",
           "category": "hidden-roles",
           "created_at": "2021-01-18 10:01:41.251",
-          "votes": 5,
+          "votes": 3,
           "comment_count": 2
         }
       ]
@@ -83,9 +83,20 @@
         "review_body": "We couldn't find the werewolf!",
         "category": "hidden-roles",
         "created_at": "2021-01-18 10:01:41.251",
-        "votes": 5,
+        "votes": 3,
         "comment_count": 2
       }
+    }
+  },
+  "GET /api/reviews/:review_id/votes": {
+    "description": "serves the votes for the given review_id",
+    "queries": [],
+    "exampleResponse": {
+      "votes": [
+        { "review_id": 4, "voter": "tickle122" },
+        { "review_id": 4, "voter": "cooljmessy" },
+        { "review_id": 4, "voter": "jessjelly" }
+      ]
     }
   },
   "GET /api/reviews/:review_id/comments": {
@@ -109,6 +120,17 @@
           "review_id": 4,
           "created_at": "2021-01-18 10:09:48.11"
         }
+      ]
+    }
+  },
+  "GET /api/comments/:comment_id/votes": {
+    "description": "serves the votes for the given comment_id",
+    "queries": [],
+    "exampleResponse": {
+      "votes": [
+        { "comment_id": 3, "voter": "tickle122" },
+        { "comment_id": 3, "voter": "happyamy2016" },
+        { "comment_id": 3, "voter": "cooljmessy" }
       ]
     }
   },
@@ -140,26 +162,13 @@
       ]
     }
   },
-  "PATCH /api/reviews/:review_id": {
-    "description": "should update the votes property of the given review and serves the updated review",
-    "queries": [],
-    "exampleResponse": {
-      "review": {
-        "review_id": 4,
-        "title": "One Night Ultimate Werewolf",
-        "designer": "Akihisa Okui",
-        "owner": "happyamy2016",
-        "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-        "category": "hidden-roles",
-        "created_at": "2021-01-18 10:01:41.251",
-        "votes": 6,
-        "comment_count": 2
-      }
-    }
-  },
   "POST /api/reviews/:review_id/comments": {
     "description": "posts a comment and serves it",
     "queries": [],
+    "exampleRequest": {
+      "username": "bainesface",
+      "body": "Sad ending but I had loads of fun!"
+    },
     "exampleResponse": {
       "comment": {
         "comment_id": 4,
@@ -171,9 +180,39 @@
       }
     }
   },
+  "POST /api/reviews/:review_id/votes": {
+    "description": "adds a vote to the given review_id",
+    "queries": [],
+    "exampleRequest": {
+      "user": "tickle122"
+    },
+    "exampleResponse": {
+      "voter": "tickle122"
+    }
+  },
+  "POST /api/comments/:comment_id/votes": {
+    "description": "adds a vote to the given comment_id",
+    "queries": [],
+    "exampleRequest": {
+      "user": "tickle122"
+    },
+    "exampleResponse": {
+      "voter": "tickle122"
+    }
+  },
   "DELETE /api/comments/:comment_id": {
     "description": "deletes the comment with the given comment_id",
     "queries": [],
+    "exampleResponse": {}
+  },
+  "DELETE /api/reviews/:review_id/votes": {
+    "description": "deletes the vote with the given review_id and user",
+    "queries": ["voter"],
+    "exampleResponse": {}
+  },
+  "DELETE /api/comments/:comment_id/votes?voter=username": {
+    "description": "deletes the vote with the given comment_id and user",
+    "queries": ["voter"],
     "exampleResponse": {}
   }
 }

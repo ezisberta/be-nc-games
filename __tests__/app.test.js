@@ -5,6 +5,18 @@ const testData = require("../db/data/test-data");
 const endpoints = require("../endpoints.json");
 beforeEach(() => seed(testData));
 
+describe("GET /api", () => {
+  it("should respond with a json representation of all the available endpoints of the api", () => {
+    const endpointsCopy = { ...endpoints };
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.endpoints).toEqual(endpointsCopy);
+      });
+  });
+});
+
 describe("GET /api/categories", () => {
   it("should respond with an array of category objects", () => {
     return request(app)
@@ -20,137 +32,6 @@ describe("GET /api/categories", () => {
             })
           );
         });
-      });
-  });
-});
-
-describe("GET /api/reviews/:review_id", () => {
-  it("should respond with a review object", () => {
-    return request(app)
-      .get("/api/reviews/3")
-      .expect(200)
-      .then((res) => {
-        expect(res.body.review).toEqual(
-          expect.objectContaining({
-            review_id: 3,
-            title: "Ultimate Werewolf",
-            designer: "Akihisa Okui",
-            owner: "bainesface",
-            review_img_url:
-              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-            review_body: "We couldn't find the werewolf!",
-            category: "social deduction",
-            created_at: "2021-01-18T10:01:41.251Z",
-            votes: 2,
-          })
-        );
-      });
-  });
-  it("should respond with a 400 status if the review ID is not valid", () => {
-    return request(app)
-      .get("/api/reviews/notAnID")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Bad Request");
-      });
-  });
-  it("should respond with a 404 status if the review does not exist", () => {
-    return request(app)
-      .get("/api/reviews/1000")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("No review_id: 1000");
-      });
-  });
-});
-
-describe("PATCH /api/reviews/:review_id", () => {
-  it("should update the votes property of the review object and respond with the upddated review", () => {
-    return request(app)
-      .patch("/api/reviews/3")
-      .send({ inc_votes: 1 })
-      .expect(200)
-      .then((res) => {
-        expect(res.body.review).toEqual({
-          review_id: 3,
-          title: "Ultimate Werewolf",
-          designer: "Akihisa Okui",
-          owner: "bainesface",
-          review_img_url:
-            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-          review_body: "We couldn't find the werewolf!",
-          category: "social deduction",
-          created_at: "2021-01-18T10:01:41.251Z",
-          votes: 3,
-        });
-      });
-  });
-  it("should respond with a 400 status if the request is not vaild", () => {
-    return request(app)
-      .patch("/api/reviews/3")
-      .send({ vote: 60 })
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Bad Request");
-      });
-  });
-  it("should respond with a 400 status if the review ID is not valid", () => {
-    return request(app)
-      .patch("/api/reviews/notAnID")
-      .send({ inc_votes: 60 })
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Bad Request");
-      });
-  });
-  it("should respond with a 404 status if the review does not exist", () => {
-    return request(app)
-      .patch("/api/reviews/1000")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("No review found for review_id: 1000");
-      });
-  });
-});
-
-describe("GET /api/users", () => {
-  it("should respond with an array of user objects", () => {
-    return request(app)
-      .get("/api/users")
-      .expect(200)
-      .then((res) => {
-        expect(res.body.users.length).toBe(4);
-        res.body.users.forEach((user) => {
-          expect(user).toEqual(
-            expect.objectContaining({
-              username: expect.any(String),
-              name: expect.any(String),
-              avatar_url: expect.any(String),
-            })
-          );
-        });
-      });
-  });
-});
-
-describe("GET /api/reviews/:review_id (comment_count)", () => {
-  it("should respond with a review object with a comment_count property", () => {
-    return request(app)
-      .get("/api/reviews/3")
-      .expect(200)
-      .then((res) => {
-        expect(res.body.review.comment_count).toBe(3);
-      });
-  });
-});
-
-describe("GET /api/reviews/:review_id (vote_count)", () => {
-  it("should respond with a review object with a vote_count property", () => {
-    return request(app)
-      .get("/api/reviews/3")
-      .expect(200)
-      .then((res) => {
-        expect(res.body.review.vote_count).toBe(2);
       });
   });
 });
@@ -294,6 +175,98 @@ describe("GET /api/reviews (queries)", () => {
   });
 });
 
+describe("GET /api/reviews/:review_id", () => {
+  it("should respond with a review object", () => {
+    return request(app)
+      .get("/api/reviews/3")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.review).toEqual(
+          expect.objectContaining({
+            review_id: 3,
+            title: "Ultimate Werewolf",
+            designer: "Akihisa Okui",
+            owner: "bainesface",
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            review_body: "We couldn't find the werewolf!",
+            category: "social deduction",
+            created_at: "2021-01-18T10:01:41.251Z",
+            votes: 2,
+          })
+        );
+      });
+  });
+  it("should respond with a 400 status if the review ID is not valid", () => {
+    return request(app)
+      .get("/api/reviews/notAnID")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  it("should respond with a 404 status if the review does not exist", () => {
+    return request(app)
+      .get("/api/reviews/1000")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No review_id: 1000");
+      });
+  });
+});
+
+describe("GET /api/reviews/:review_id (comment_count)", () => {
+  it("should respond with a review object with a comment_count property", () => {
+    return request(app)
+      .get("/api/reviews/3")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.review.comment_count).toBe(3);
+      });
+  });
+});
+
+describe("GET /api/reviews/:review_id (vote_count)", () => {
+  it("should respond with a review object with a vote_count property", () => {
+    return request(app)
+      .get("/api/reviews/3")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.review.vote_count).toBe(2);
+      });
+  });
+});
+
+describe("GET /api/reviews/:review_id/votes", () => {
+  it("should return with an array of votes for the given ID", () => {
+    return request(app)
+      .get("/api/reviews/3/votes")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.votes).toEqual([
+          { review_id: 3, voter: "philippaclaire9" },
+          { review_id: 3, voter: "dav3rid" },
+        ]);
+      });
+  });
+  it("should respond with a 400 status if the review ID is not valid", () => {
+    return request(app)
+      .get("/api/reviews/notAnID/votes")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  it("should respond with a 404 status if the review does not exist", () => {
+    return request(app)
+      .get("/api/reviews/1000/votes")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No review found for review_id: 1000");
+      });
+  });
+});
+
 describe("GET /api/reviews/:review_id/comments", () => {
   it("should respond with an array of comment objects for the given ID", () => {
     return request(app)
@@ -333,36 +306,6 @@ describe("GET /api/reviews/:review_id/comments", () => {
   });
 });
 
-describe("GET /api/reviews/:review_id/votes", () => {
-  it("should return with an array of votes for the given ID", () => {
-    return request(app)
-      .get("/api/reviews/3/votes")
-      .expect(200)
-      .then((res) => {
-        expect(res.body.votes).toEqual([
-          { review_id: 3, voter: "philippaclaire9" },
-          { review_id: 3, voter: "dav3rid" },
-        ]);
-      });
-  });
-  it("should respond with a 400 status if the review ID is not valid", () => {
-    return request(app)
-      .get("/api/reviews/notAnID/votes")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Bad Request");
-      });
-  });
-  it("should respond with a 404 status if the review does not exist", () => {
-    return request(app)
-      .get("/api/reviews/1000/votes")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("No review found for review_id: 1000");
-      });
-  });
-});
-
 describe("GET /api/comments/:comment_id/votes", () => {
   it("should return with an array of votes for the given ID", () => {
     return request(app)
@@ -390,6 +333,26 @@ describe("GET /api/comments/:comment_id/votes", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("No comment found for comment_id: 10000");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  it("should respond with an array of user objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.users.length).toBe(4);
+        res.body.users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
       });
   });
 });
@@ -456,7 +419,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
 });
 
 describe("POST /api/reviews/:review_id/votes", () => {
-  it("should respond with the added voter", () => {
+  it("should respond with the added vote", () => {
     return request(app)
       .post("/api/reviews/3/votes")
       .send({
@@ -660,18 +623,6 @@ describe("DELETE /api/comments/:comment_id/votes?voter=username", () => {
         expect(res.body.msg).toBe(
           "No vote found for user dav3rid on comment_id: 2"
         );
-      });
-  });
-});
-
-describe("GET /api", () => {
-  it("should respond with a json representation of all the available endpoints of the api", () => {
-    const endpointsCopy = { ...endpoints };
-    return request(app)
-      .get("/api")
-      .expect(200)
-      .then((res) => {
-        expect(res.body.endpoints).toEqual(endpointsCopy);
       });
   });
 });
