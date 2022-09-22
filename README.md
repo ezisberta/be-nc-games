@@ -45,7 +45,7 @@ This is the api used on NC Games, a platform where users can vote and comment on
 - The request object must have the following structure:
   * key: username, value type: string, value constraints: must be an existing user (check development-data).
   * key: body, value type: string, value constraints: none.
-    e.g.: {
+  * e.g.: {
         username: "happyamy2016",
         body: "Sad ending but I had loads of fun!",
       }
@@ -56,7 +56,7 @@ This is the api used on NC Games, a platform where users can vote and comment on
 ## POST https://ezisberta-be-nc-games.herokuapp.com/api/reviews/:review_id/votes/
 - The request object must have the following structure:
   * key: user, value type: string, value constraints: must be an existing user (check development-data).
-    e.g.: {
+  * e.g.: {
         user: "happyamy2016",
       }
 - The response will contain a username string contained within a 'voter' key, the vote will get the given review_id - 201 status.
@@ -66,7 +66,7 @@ This is the api used on NC Games, a platform where users can vote and comment on
 ## POST https://ezisberta-be-nc-games.herokuapp.com/api/comments/:comment_id/votes/
 - The request object must have the following structure:
   * key: user, value type: string, value constraints: must be an existing user (check development-data).
-    e.g.: {
+  * e.g.: {
         user: "happyamy2016",
       }
 - The response will contain a username string contained within a 'voter' key, the vote will get the given comment_id - 201 status.
