@@ -12,9 +12,9 @@ This is the api used on NC Games, a platform where users can vote and comment on
 
 ## GET https://ezisberta-be-nc-games.herokuapp.com/api/reviews/
 - It can have the following queries:
-  -> sort_by: it can take any of the review properties, defaults to created_at if not added;
-  -> order: it can either be ASC or DESC which is the default if not added;
-  -> category: it will select the reviews of a certain category, therefore, it will only accept existing category names (check development-data).
+  * sort_by: it can take any of the review properties, defaults to created_at if not added;
+  * order: it can either be ASC or DESC which is the default if not added;
+  * category: it will select the reviews of a certain category, therefore, it will only accept existing category names (check development-data).
 - The response will contain an array of review objects contained within a 'reviews' key - 200 status.
 - It will respond with a 'Bad request' error message if either the query or its value is not valid - 400 status.
   
@@ -43,9 +43,9 @@ This is the api used on NC Games, a platform where users can vote and comment on
 
 ## POST https://ezisberta-be-nc-games.herokuapp.com/api/reviews/:review_id/comments/
 - The request object must have the following structure:
-  -> key: username, value type: string, value constraints: must be an existing user (check development-data).
-  -> key: body, value type: string, value constraints: none.
-  e.g.: {
+  * key: username, value type: string, value constraints: must be an existing user (check development-data).
+  * key: body, value type: string, value constraints: none.
+    e.g.: {
         username: "happyamy2016",
         body: "Sad ending but I had loads of fun!",
       }
@@ -55,8 +55,8 @@ This is the api used on NC Games, a platform where users can vote and comment on
 
 ## POST https://ezisberta-be-nc-games.herokuapp.com/api/reviews/:review_id/votes/
 - The request object must have the following structure:
-  -> key: user, value type: string, value constraints: must be an existing user (check development-data).
-  e.g.: {
+  * key: user, value type: string, value constraints: must be an existing user (check development-data).
+    e.g.: {
         user: "happyamy2016",
       }
 - The response will contain a username string contained within a 'voter' key, the vote will get the given review_id - 201 status.
@@ -65,8 +65,8 @@ This is the api used on NC Games, a platform where users can vote and comment on
 
 ## POST https://ezisberta-be-nc-games.herokuapp.com/api/comments/:comment_id/votes/
 - The request object must have the following structure:
-  -> key: user, value type: string, value constraints: must be an existing user (check development-data).
-  e.g.: {
+  * key: user, value type: string, value constraints: must be an existing user (check development-data).
+    e.g.: {
         user: "happyamy2016",
       }
 - The response will contain a username string contained within a 'voter' key, the vote will get the given comment_id - 201 status.
@@ -98,9 +98,9 @@ Feel free to fork and clone this repo, then you should follow these steps:
 
 - In the project directory, run npm install to get the required libraries.
 - Then you'll need to create 2 .env files: 
-  -> 1 for testing - .env.test;
-  -> 1 for development - .env.development; 
-  -> you may even add a 3rd one for production, but all must contain the following line: PGDATABASE=<database_name>
+  * 1 for testing - .env.test;
+  * 1 for development - .env.development; 
+  * you may even add a 3rd one for production, but all must contain the following line: PGDATABASE=<database_name>
 
 # Related Links
 
