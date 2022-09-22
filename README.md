@@ -114,4 +114,4 @@ Feel free to fork and clone this repo, then you should follow these steps:
 
 # Final words
 
-Thanks for viewing my first software development project, I had great pleasure in making it and am overall satisfied with the end result, although I'm a strong believer that there's always room for improvement and I was very happy with the constant feedback we got from our tutors throughout the building of this app, so please don't hesitate in reaching out! 
+Thanks for viewing my first software development project, done as part of the Northcoders bootcmap program. I had great pleasure in making it and am overall satisfied with the end result, although I'm a strong believer that there's always room for improvement and I was very happy with the constant feedback we got from our tutors throughout the building of this app, so please don't hesitate in reaching out! 
