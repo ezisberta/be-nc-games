@@ -106,11 +106,11 @@ Feel free to fork and clone this repo, then you should follow these steps:
 
 ## Front-end
 
-- Please visit: https://github.com/ezisberta/fe-nc-games/
+- Visit: https://github.com/ezisberta/fe-nc-games/
 
 ## Browse
 
-- Please visit: https://ezisberta-nc-games.netlify.app/
+- Visit: https://ezisberta-nc-games.netlify.app/
 
 # Final words
 
