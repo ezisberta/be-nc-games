@@ -88,7 +88,7 @@ This is the api used on NC Games, a platform where users can vote and comment on
 - It will respond with a 'Bad request' error message if the comment_id is not in a valid format - 400 status.
 - It will respond with a 'Not found' error message if the comment with the given comment_id does not exist - 404 status.
 
-# Tech
+# Tech used
 
 This app uses NodeJS and has an MVC architecture, the controllers were built using Express, and the database and models using Postgress. Jest and Supertest were used for testing and the api is currently being hosted on Heroku (although this may change if Heroku moves forward with its decision to charge for their Postgres hosting service).
 
