@@ -1,19 +1,117 @@
-# Install Pachages
+# About
 
-Once you have cloned down the project, be sure to run npm install to instal all the relevant packages. Most of what you need is there already, but you will additionally need to install express and supertest
+This is the api used on NC Games, a platform where users can vote and comment on several game reviews. It can take several requests (check below).
 
-# .env files
+# Requests
 
-We'll have two databases in this project. One for real looking dev data and another for simpler test data.
+## GET https://ezisberta-be-nc-games.herokuapp.com/api/
+- The response will contain an array with a brief description of all the endpoints contained within an 'endpoints' key - 200 status.
 
-You will need to create two .env files for your project: .env.test and .env.development. Into each, add PGDATABASE=<database_name_here>, with the correct database name for that environment (see /db/setup.sql for the database names). Double check that these .env files are .gitignored: the .gitignore file must conatain the following line: <.env.\*>, or each file's name.
+## GET https://ezisberta-be-nc-games.herokuapp.com/api/categories/
+- The response will contain an array of category objects contained within a 'categories' key - 200 status.
 
-# fiy
+## GET https://ezisberta-be-nc-games.herokuapp.com/api/reviews/
+- It can have the following queries:
+  -> sort_by: it can take any of the review properties, defaults to created_at if not added;
+  -> order: it can either be ASC or DESC which is the default if not added;
+  -> category: it will select the reviews of a certain category, therefore, it will only accept existing category names (check development-data).
+- The response will contain an array of review objects contained within a 'reviews' key - 200 status.
+- It will respond with a 'Bad request' error message if either the query or its value is not valid - 400 status.
+  
+## GET https://ezisberta-be-nc-games.herokuapp.com/api/reviews/:review_id/
+- The response will contain a review object contained within a 'review' key, it will match the given review_id - 200 status.
+- It will respond with a 'Bad request' error message if the review_id is not in a valid format - 400 status.
+- It will respond with a 'Not found' error message if the review with the given review_id does not exist - 404 status.
 
-You have also been provided with a db folder with some data, a setup.sql file and a seeds folder. You should also take a minute to familiarise yourself with the npm scripts you have been provided.
+## GET https://ezisberta-be-nc-games.herokuapp.com/api/reviews/:review_id/votes/
+- The response will contain an array of vote objects contained within a 'votes' key, these will match the given review_id - 200 status.
+- It will respond with a 'Bad request' error message if the review_id is not in a valid format - 400 status.
+- It will respond with a 'Not found' error message if the review with the given review_id does not exist - 404 status.
 
-The job of index.js in each the data folders is to export out all the data from that folder, currently stored in separate files. This is so that, when you need access to the data elsewhere, you can write one convenient require statement - to the index file, rather than having to require each file individually. Think of it like a index of a book - a place to refer to! Make sure the index file exports an object with values of the data from that folder with the keys:
-categoryData,
-reviewData,
-userData,
-commentData.
+## GET https://ezisberta-be-nc-games.herokuapp.com/api/reviews/:review_id/comments/
+- The response will contain an array of comment objects contained within a 'comments' key, these will match the given review_id - 200 status.
+- It will respond with a 'Bad request' error message if the review_id is not in a valid format - 400 status.
+- It will respond with a 'Not found' error message if the review with the given review_id does not exist - 404 status.
+
+## GET https://ezisberta-be-nc-games.herokuapp.com/api/comments/:comment_id/votes/
+- The response will contain an array of vote objects contained within a 'votes' key, these will match the given comment_id - 200 status.
+- It will respond with a 'Bad request' error message if the comment_id is not in a valid format - 400 status.
+- It will respond with a 'Not found' error message if the comment with the given comment_id does not exist - 404 status.
+
+## GET https://ezisberta-be-nc-games.herokuapp.com/api/users/
+- The response will contain an array of user objects contained within a 'users' key - 200 status.
+
+## POST https://ezisberta-be-nc-games.herokuapp.com/api/reviews/:review_id/comments/
+- The request object must have the following structure:
+  -> key: username, value type: string, value constraints: must be an existing user (check development-data).
+  -> key: body, value type: string, value constraints: none.
+  e.g.: {
+        username: "happyamy2016",
+        body: "Sad ending but I had loads of fun!",
+      }
+- The response will contain the added comment object contained within a 'comment' key, it will be assigned the given review_id - 201 status.
+- It will respond with a 'Bad request' error message if either the review_id or the request object is not in a valid format - 400 status.
+- It will respond with a 'Not found' error message if the review with the given review_id does not exist - 404 status.
+
+## POST https://ezisberta-be-nc-games.herokuapp.com/api/reviews/:review_id/votes/
+- The request object must have the following structure:
+  -> key: user, value type: string, value constraints: must be an existing user (check development-data).
+  e.g.: {
+        user: "happyamy2016",
+      }
+- The response will contain a username string contained within a 'voter' key, the vote will get the given review_id - 201 status.
+- It will respond with a 'Bad request' error message if either the review_id or the request object is not in a valid format - 400 status.
+- It will respond with a 'Not found' error message if the review with the given review_id does not exist - 404 status.
+
+## POST https://ezisberta-be-nc-games.herokuapp.com/api/comments/:comment_id/votes/
+- The request object must have the following structure:
+  -> key: user, value type: string, value constraints: must be an existing user (check development-data).
+  e.g.: {
+        user: "happyamy2016",
+      }
+- The response will contain a username string contained within a 'voter' key, the vote will get the given comment_id - 201 status.
+- It will respond with a 'Bad request' error message if either the comment_id or the request object is not in a valid format - 400 status.
+- It will respond with a 'Not found' error message if the comment with the given comment_id does not exist - 404 status.
+
+## DELETE https://ezisberta-be-nc-games.herokuapp.com/api/comments/:comment_id/
+- This will delete the comment with the given comment_id. - 204 status.
+- It will respond with a 'Bad request' error message if the comment_id is not in a valid format - 400 status.
+- It will respond with a 'Not found' error message if the comment with the given comment_id does not exist - 404 status.
+
+## DELETE https://ezisberta-be-nc-games.herokuapp.com/api/reviews/:review_id/votes?voter=:username/
+- This will delete the vote with the given review_id and username (this query is mandatory). - 204 status.
+- It will respond with a 'Bad request' error message if the review_id is not in a valid format - 400 status.
+- It will respond with a 'Not found' error message if the review with the given review_id does not exist - 404 status.
+
+## DELETE https://ezisberta-be-nc-games.herokuapp.com/api/comments/:comment_id/votes?voter=:username/
+- This will delete the vote with the given comment_id and username (this query is mandatory). - 204 status.
+- It will respond with a 'Bad request' error message if the comment_id is not in a valid format - 400 status.
+- It will respond with a 'Not found' error message if the comment with the given comment_id does not exist - 404 status.
+
+# Tech
+
+This app uses NodeJS and has an MVC architecture, the controllers were built using Express, and the database and models using Postgress. Jest and Supertest were used for testing and the api is currently being hosted on Heroku (although this may change if Heroku moves forward with its decision to charge for their Postgres hosting service).
+
+# Launch
+
+Feel free to fork and clone this repo, then you should follow these steps:
+
+- In the project directory, run npm install to get the required libraries.
+- Then you'll need to create 2 .env files: 
+  -> 1 for testing - .env.test;
+  -> 1 for development - .env.development; 
+  -> you may even add a 3rd one for production, but all must contain the following line: PGDATABASE=<database_name>
+
+# Related Links
+
+## Front-end
+
+- Please visit: https://github.com/ezisberta/fe-nc-games/
+
+## Browse
+
+- Please visit: https://ezisberta-nc-games.netlify.app/
+
+# Final words
+
+Thanks for viewing my first software development project, I had great pleasure in making it and am overall satisfied with the end result, although I'm a strong believer that there's always room for improvement and I was very happy with the constant feedback we got from our tutors throughout the building of this app, so please don't hesitate in reaching out! 
