@@ -1,6 +1,6 @@
 # About
 
-This is the api used on NC Games, a platform where users can vote and comment on several game reviews. It can take several requests (check below).
+This is the api used for NC Games, a platform where users can vote and comment on several game reviews. It can take several requests (check below).
 
 # Requests
 
